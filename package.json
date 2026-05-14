@@ -1,0 +1,29 @@
+{
+  "name": "agent-memory-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TiDB Cloud backed agent memory lab for Codex and Claude Code workflows.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "doctor": "tsx src/cli.ts doctor",
+    "seed": "tsx src/cli.ts seed --sample",
+    "search": "tsx src/cli.ts search",
+    "sql-editor": "tsx src/cli.ts sql-editor --sample",
+    "rrf-sql": "tsx src/cli.ts rrf-sql",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "dotenv": "^17.2.3",
+    "mysql2": "^3.15.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  }
+}
