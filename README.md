@@ -57,13 +57,22 @@ DB パスワードをまだ生成しない場合は、TiDB Cloud の SQL Editor 
 
 ```bash
 npm run search -- --store local "ignorePublish published:false"
-npm run sql-editor > /tmp/agent-memory-lab.sql
-npm run rrf-sql > /tmp/agent-memory-lab-rrf.sql
+npm run --silent sql-editor > /tmp/agent-memory-lab.sql
+npm run --silent rrf-sql > /tmp/agent-memory-lab-rrf.sql
 ```
 
-## 記事で見せるポイント
+## 実行証拠
 
-- ベクトル検索だけでは、`ignorePublish`、`MEM9_API_KEY`、ファイル名、CLI コマンドのような「正確一致が大事な記憶」を落としやすい
-- 全文検索だけでは、「公開ゲート」「deploy intent」など言い換えられた運用意図を拾いにくい
-- TiDB Cloud なら、SQL メタデータ、ベクトル、全文検索を同じ接続と同じテーブル設計で扱える
-- mem9 は管理型の完成形として触れ、自作スキーマとの比較軸を置く
+TiDB Cloud SQL Editor で、全文検索、ベクトル検索、RRF 統合を実行した結果です。
+
+### RRF で統合した最終結果
+
+<img src="docs/images/tidb-rrf-hybrid-result.png" alt="TiDB Cloud SQL Editorで全文検索とベクトル検索をRRF統合した結果" width="780">
+
+### 全文検索
+
+<img src="docs/images/tidb-fulltext-search-result.png" alt="TiDB Cloud SQL EditorでFTS_MATCH_WORDによる全文検索を実行した結果" width="780">
+
+### ベクトル検索
+
+<img src="docs/images/tidb-vector-search-result.png" alt="TiDB Cloud SQL EditorでVEC_COSINE_DISTANCEによるベクトル検索を実行した結果" width="780">
