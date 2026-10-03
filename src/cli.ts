@@ -1,11 +1,21 @@
 #!/usr/bin/env node
 import path from "node:path";
-import { Command } from "commander";
+import { Command, InvalidArgumentError } from "commander";
 import dotenv from "dotenv";
 import { LocalMemoryStore } from "./local-store.js";
 import { createTidbPool, readTidbEnv, TidbMemoryStore } from "./tidb-store.js";
 import { readJsonl } from "./io.js";
+import { parseSearchLimitOption } from "./search-limit.js";
 import { buildRrfSql, buildSqlEditorScript } from "./sql-export.js";
+
+function parseLimitOption(value: string): number {
+  try {
+    return parseSearchLimitOption(value);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new InvalidArgumentError(message);
+  }
+}
 
 dotenv.config({ quiet: true });
 
@@ -77,7 +87,7 @@ program
   .command("search")
   .description("Run hybrid search.")
   .argument("<query>", "query text")
-  .option("-l, --limit <n>", "number of results", (value) => Number.parseInt(value, 10), 5)
+  .option("-l, --limit <n>", "number of results; a positive integer >= 1", parseLimitOption, 5)
   .option("--project <name>", "filter by project")
   .option("--agent <name>", "filter by agent")
   .option("--file <path>", "JSONL file for local store", "data/sample-memories.jsonl")

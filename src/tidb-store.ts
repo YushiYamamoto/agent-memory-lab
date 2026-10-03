@@ -3,6 +3,7 @@ import mysql, { type Pool, type RowDataPacket } from "mysql2/promise";
 import { z } from "zod";
 import { EMBEDDING_DIMENSIONS, embedText, vectorLiteral } from "./embedding.js";
 import { reciprocalRankFusion } from "./fusion.js";
+import { resolveSearchLimit } from "./search-limit.js";
 import type { MemoryRecord, RankedHit, SearchOptions, SearchResult } from "./types.js";
 
 const EnvSchema = z.object({
@@ -107,20 +108,22 @@ export class TidbMemoryStore {
   }
 
   async hybridSearch(query: string, options: SearchOptions = {}): Promise<SearchResult> {
+    const limit = resolveSearchLimit(options.limit);
+    const resolved = { ...options, limit };
     const [vectorHits, fulltextHits] = await Promise.all([
-      this.vectorSearch(query, options),
-      this.fullTextSearch(query, options),
+      this.vectorSearch(query, resolved),
+      this.fullTextSearch(query, resolved),
     ]);
 
     return {
       query,
-      hits: reciprocalRankFusion(vectorHits, fulltextHits).slice(0, options.limit ?? 5),
+      hits: reciprocalRankFusion(vectorHits, fulltextHits).slice(0, limit),
       store: "tidb",
     };
   }
 
   async vectorSearch(query: string, options: SearchOptions = {}): Promise<RankedHit[]> {
-    const limit = options.limit ?? 5;
+    const limit = resolveSearchLimit(options.limit);
     const where = buildWhere(options);
     const sql = `
       SELECT id, source, agent, project, kind, content, metadata, created_at,
@@ -145,7 +148,7 @@ export class TidbMemoryStore {
   }
 
   async fullTextSearch(query: string, options: SearchOptions = {}): Promise<RankedHit[]> {
-    const limit = options.limit ?? 5;
+    const limit = resolveSearchLimit(options.limit);
     const where = buildWhere(options, "FTS_MATCH_WORD(?, content)");
     const sql = `
       SELECT id, source, agent, project, kind, content, metadata, created_at,
