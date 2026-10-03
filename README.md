@@ -45,6 +45,8 @@ npm run build
 npm run search -- --store local "ignorePublish published:false"
 ```
 
+`--limit` は 1 以上の整数です。省略すると 5 件です。0、負数、小数、数値以外を指定するとエラーになり、CLI は終了コード 0 以外で終了します。ローカル検索と TiDB 検索のどちらも同じ規則です。
+
 ## TiDB 検証
 
 ```bash

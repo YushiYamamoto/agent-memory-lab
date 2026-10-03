@@ -1,5 +1,6 @@
 import { cosineDistance, embedText, tokenize } from "./embedding.js";
 import { reciprocalRankFusion } from "./fusion.js";
+import { resolveSearchLimit } from "./search-limit.js";
 import type { MemoryRecord, RankedHit, SearchOptions, SearchResult } from "./types.js";
 
 export class LocalMemoryStore {
@@ -13,7 +14,7 @@ export class LocalMemoryStore {
   }
 
   hybridSearch(query: string, options: SearchOptions = {}): SearchResult {
-    const limit = options.limit ?? 5;
+    const limit = resolveSearchLimit(options.limit);
     const candidates = this.rows.filter((record) => {
       if (options.project && record.project !== options.project) return false;
       if (options.agent && record.agent !== options.agent) return false;
